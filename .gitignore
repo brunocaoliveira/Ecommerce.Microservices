@@ -1,0 +1,37 @@
+# Dependencies
+**/[Dd]ependencies/
+**/[Pp]ackages/
+
+# Tooling
+**/[Tt]ools/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Bb]uild/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio temporary files
+.vs/
+
+# Rider temporary files
+.idea/
+
+# JetBrains Rider
+*.sln.iml
+
+# Mac files
+.DS_Store
+
+# Log files
+[Ll]ogs/
+*.log
+
+# Secrets and environment-specific settings
+appsettings.Development.json
+secrets.json
