@@ -36,30 +36,21 @@ O **EcommerceProjeto** é uma aplicação de e-commerce desenvolvida com arquite
 ```mermaid
 graph TB
     Client[Cliente] --> Gateway[API Gateway<br/>Porta 5273]
+    
     Gateway --> Auth[Auth API<br/>Porta 5150]
     Gateway --> Inventory[Inventory API<br/>Porta 5203]
     Gateway --> Sales[Sales API<br/>Porta 5191]
+
+    %% Comunicação Síncrona para validar estoque
+    Sales -- "1. Valida Estoque" --> Gateway
     
-    Sales --> RabbitMQ[RabbitMQ<br/>Message Queue]
-    RabbitMQ --> Inventory
+    %% Comunicação Assíncrona para dar baixa no estoque
+    Sales -- "2. Publica Evento de Venda" --> RabbitMQ[RabbitMQ<br/>Message Queue]
+    RabbitMQ -- "3. Entrega Mensagem" --> Inventory
     
     Auth --> MySQL_Auth[(MySQL<br/>authdb)]
     Inventory --> MySQL_Inventory[(MySQL<br/>inventorydb)]
     Sales --> MySQL_Sales[(MySQL<br/>salesdb)]
-    
-    subgraph "Serviços"
-        Auth
-        Inventory
-        Sales
-    end
-    
-    subgraph "Infraestrutura"
-        Gateway
-        RabbitMQ
-        MySQL_Auth
-        MySQL_Inventory
-        MySQL_Sales
-    end
 ```
 
 ## 🛠️ Tecnologias Utilizadas
