@@ -4,19 +4,19 @@ Um sistema de e-commerce moderno construído com arquitetura de microserviços, 
 
 ## 📋 Índice
 
-- [Sobre o Projeto](#sobre-o-projeto)
-- [Arquitetura](#arquitetura)
-- [Tecnologias Utilizadas](#tecnologias-utilizadas)
-- [Estrutura do Projeto](#estrutura-do-projeto)
-- [Funcionalidades](#funcionalidades)
-- [Pré-requisitos](#pré-requisitos)
-- [Instalação e Configuração](#instalação-e-configuração)
-- [Como Executar](#como-executar)
-- [API Endpoints](#api-endpoints)
-- [Fluxo de Comunicação](#fluxo-de-comunicação)
-- [Testes](#testes)
-- [Contribuição](#contribuição)
-- [Autor](#autor)
+- [Sobre o Projeto](#-sobre-o-projeto)
+- [Arquitetura](#-arquitetura)
+- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Funcionalidades](#-funcionalidades)
+- [Pré-requisitos](#-pré-requisitos)
+- [Instalação e Configuração](#-instalação-e-configuração)
+- [Como Executar](#-como-executar)
+- [API Endpoints](#-api-endpoints)
+- [Fluxo de Comunicação](#-fluxo-de-comunicação)
+- [Testes](#-testes)
+- [Contribuição](#-contribuição)
+- [Autor](#-autor)
 
 ## 🎯 Sobre o Projeto
 
@@ -35,22 +35,21 @@ O **EcommerceProjeto** é uma aplicação de e-commerce desenvolvida com arquite
 
 ```mermaid
 graph TB
-    Client[Cliente] --> Gateway[API Gateway<br/>Porta 5273]
+    Client[Cliente Externo] --> Gateway["API Gateway<br>(Ocelot)<br>Porta 5273"]
     
-    Gateway --> Auth[Auth API<br/>Porta 5150]
-    Gateway --> Inventory[Inventory API<br/>Porta 5203]
-    Gateway --> Sales[Sales API<br/>Porta 5191]
+    Gateway --> Auth["Auth API<br>Porta 5150"]
+    Gateway --> Inventory["Inventory API<br>Porta 5203"]
+    Gateway --> Sales["Sales API<br>Porta 5191"]
 
     %% Comunicação Síncrona para validar estoque
-    Sales -- "1. Valida Estoque" --> Gateway
+    Sales -- "1. Valida Estoque (Via Gateway)" --> Gateway
     
     %% Comunicação Assíncrona para dar baixa no estoque
-    Sales -- "2. Publica Evento de Venda" --> RabbitMQ[RabbitMQ<br/>Message Queue]
-    RabbitMQ -- "3. Entrega Mensagem" --> Inventory
+    Sales -- "2. Publica Evento 'VendaRealizada'" --> RabbitMQ["RabbitMQ<br>Message Broker"]
+    RabbitMQ -- "3. Notifica Consumidor" --> Inventory
     
-    Auth --> MySQL_Auth[(MySQL<br/>authdb)]
-    Inventory --> MySQL_Inventory[(MySQL<br/>inventorydb)]
-    Sales --> MySQL_Sales[(MySQL<br/>salesdb)]
+    Inventory --> MySQL_Inventory[("MySQL<br>inventorydb")]
+    Sales --> MySQL_Sales[("MySQL<br>salesdb")]
 ```
 
 ## 🛠️ Tecnologias Utilizadas
@@ -218,21 +217,12 @@ dotnet ef database update
 Execute cada serviço em terminais separados, a partir da pasta raiz da solução:
 
 ```bash
-# Terminal 1 - API Gateway
-cd ApiGateway
-dotnet run
+# Execute cada comando em um terminal separado, a partir da pasta raiz da solução:
 
-# Terminal 2 - Auth API
-cd Auth.API
-dotnet run
-
-# Terminal 3 - Inventory API
-cd Inventory.API
-dotnet run
-
-# Terminal 4 - Sales API
-cd Sales.API
-dotnet run
+dotnet run --project ApiGateway
+dotnet run --project Auth.API
+dotnet run --project Inventory.API
+dotnet run --project Sales.API
 ```
 
 ### Verificar se os serviços estão funcionando:
@@ -255,6 +245,9 @@ Content-Type: application/json
   "password": "123"
 }
 ```
+> **Nota:** Para fins de demonstração, este projeto utiliza uma lista de usuários fixa em memória. As credenciais válidas são:
+> * **Usuário:** `bruno`, **Senha:** `123` (simulando um cliente)
+> * **Usuário:** `admin`, **Senha:** `admin` (simulando um administrador)
 
 ### Produtos (através do Gateway)
 ```http
@@ -332,11 +325,5 @@ Contribuições são sempre bem-vindas! Para contribuir:
 ---
 
 ⭐ **Se este projeto foi útil para você, considere dar uma estrela!** ⭐
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
 
 **Desenvolvido com ❤️ por Bruno Oliveira**
